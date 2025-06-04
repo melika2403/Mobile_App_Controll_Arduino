@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Arduino</string>
+    <string name="device">Device</string>
+    <string name="light">Lumines LED Lamp</string>
+    <string name="lamp">Lamp</string>
+    <string name="tv">Smart TV</string>
+    <string name="air">Air Conditioner</string>
+    <string name="speaker">Speaker</string>
+    <string name="channel">Channel</string>
+    <string name="color">Color</string>
+    <string name="temperature">Temperature</string>
+    <string name="volume">Volume</string>
+</resources>
