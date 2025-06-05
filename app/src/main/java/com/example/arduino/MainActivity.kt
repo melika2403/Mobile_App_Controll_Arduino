@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.navigation.compose.rememberNavController
 import com.example.arduino.navigation.NavigationGraph
 import com.example.arduino.ui.MainScreen
+import com.example.arduino.ui.MainTopBar
 import com.example.arduino.ui.MainViewModel
 import com.example.arduino.ui.navigation.BottomNavigationBar
 import com.example.arduino.ui.theme.ArduinoTheme
@@ -25,6 +26,11 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
 
                 Scaffold(
+                    topBar = {
+                        MainTopBar(onAboutClick = {
+                            navController.navigate("about")
+                        })
+                    },
                     bottomBar = { BottomNavigationBar(navController = navController) }
                 ) { innerPadding ->
                     NavigationGraph(navController = navController, viewModel = viewModel, innerPadding = innerPadding,)
