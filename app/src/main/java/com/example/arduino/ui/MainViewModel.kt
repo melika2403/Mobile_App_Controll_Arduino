@@ -60,6 +60,27 @@ class MainViewModel(application: Application) :  AndroidViewModel(application) {
         repo.sendAutoAC(currentSettings.autoACEnabled, currentSettings.temperatureThreshold)
     }
 
+    private val _lampSwitchState = MutableStateFlow(false)
+    val lampSwitchState: StateFlow<Boolean> = _lampSwitchState
+
+    private val _tvSwitchState = MutableStateFlow(false)
+    val tvSwitchState: StateFlow<Boolean> = _tvSwitchState
+
+    private val _acSwitchState = MutableStateFlow(false)
+    val acSwitchState: StateFlow<Boolean> = _acSwitchState
+
+    private val _speakerSwitchState = MutableStateFlow(false)
+    val speakerSwitchState: StateFlow<Boolean> = _speakerSwitchState
+
+    fun setDeviceSwitchState(deviceName: String, isOn: Boolean) {
+        when (deviceName) {
+            "Lamp" -> _lampSwitchState.value = isOn
+            "Smart TV" -> _tvSwitchState.value = isOn
+            "Air Conditioner" -> _acSwitchState.value = isOn
+            "Speaker" -> _speakerSwitchState.value = isOn
+        }
+    }
+
     fun connectToArduino(): Boolean {
         val success = repo.connect()
         return success

@@ -20,6 +20,7 @@ import com.example.arduino.ui.MainViewModel
 import com.example.arduino.ui.SettingsScreen
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.arduino.ui.screens.AboutScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -49,10 +50,11 @@ fun NavigationGraph(navController: NavHostController, viewModel: MainViewModel, 
                 onSettingsChange = { updated ->
                     viewModel.updateSettings(updated)
                 },
-                onSubmit = {
-                    // Ako trebaš još nešto kad korisnik klikne "Save"
-                }
+                onSubmit = { viewModel.sendAllSettingsToArduino() }
             )
+        }
+        composable(NavigationItem.ONama.route) {
+            AboutScreen()
         }
 
     }

@@ -126,31 +126,21 @@ fun LivingRoom(viewModel: MainViewModel = viewModel()){
 
 @Composable
 fun ToggleSwitchWithLabel(
-    isCheckedInitial: Boolean = false,
-    onTurnOn: () -> Unit,
-    onTurnOff: () -> Unit
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
 ) {
-    var isChecked by remember { mutableStateOf(isCheckedInitial) }
-
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Switch(
-            checked = isChecked,
-            onCheckedChange = {
-                isChecked = it
-                if (isChecked) {
-                    onTurnOn()
-                } else {
-                    onTurnOff()
-                }
-            }
+            checked = checked,
+            onCheckedChange = onCheckedChange
         )
 
         Text(
-            text = if (isChecked) "On" else "Off",
+            text = if (checked) "On" else "Off",
             style = typography.bodySmall,
             color = Color.Gray
         )
@@ -167,10 +157,10 @@ fun Devices(
     modifier: Modifier = Modifier
 ) {
     val deviceState by when (deviceName) {
-        "Lamp" -> viewModel.ledStatus.collectAsState()
-        "Smart TV" -> viewModel.tvStatus.collectAsState()
-        "Air Conditioner" -> viewModel.acStatus.collectAsState()
-        "Speaker" -> viewModel.speakerStatus.collectAsState()
+        "Lamp" -> viewModel.lampSwitchState.collectAsState()
+        "Smart TV" -> viewModel.tvSwitchState.collectAsState()
+        "Air Conditioner" -> viewModel.acSwitchState.collectAsState()
+        "Speaker" -> viewModel.speakerSwitchState.collectAsState()
         else -> remember { mutableStateOf(false) }
     }
 
@@ -213,24 +203,17 @@ fun Devices(
             )
             Spacer(modifier = Modifier.height(8.dp))
             ToggleSwitchWithLabel(
-                isCheckedInitial = deviceState,
-                onTurnOn = {
+                checked = deviceState,
+                onCheckedChange = { isChecked ->
+                    viewModel.setDeviceSwitchState(deviceName, isChecked)
                     when (deviceName) {
-                        "Lamp" -> viewModel.turnOnLed()
-                        "Smart TV" -> viewModel.turnOnTV()
-                        "Air Conditioner" -> viewModel.turnOnAC()
-                        "Speaker" -> viewModel.turnOnSpeaker()
-                    }
-                },
-                onTurnOff = {
-                    when (deviceName) {
-                        "Lamp" -> viewModel.turnOffLed()
-                        "Smart TV" -> viewModel.turnOffTV()
-                        "Air Conditioner" -> viewModel.turnOffAC()
-                        "Speaker" -> viewModel.turnOffSpeaker()
+                        "Lamp" -> if (isChecked) viewModel.turnOnLed() else viewModel.turnOffLed()
+                        "Smart TV" -> if (isChecked) viewModel.turnOnTV() else viewModel.turnOffTV()
+                        "Air Conditioner" -> if (isChecked) viewModel.turnOnAC() else viewModel.turnOffAC()
+                        "Speaker" -> if (isChecked) viewModel.turnOnSpeaker() else viewModel.turnOffSpeaker()
                     }
                 }
-            )
+            )   
         }
     }
 }
