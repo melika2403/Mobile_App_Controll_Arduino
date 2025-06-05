@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Arduino</string>
+    <string name="app_name">My Smart Home</string>
     <string name="device">Device</string>
     <string name="light">Lumines LED Lamp</string>
     <string name="lamp">Lamp</string>
@@ -10,4 +10,11 @@
     <string name="color">Color</string>
     <string name="temperature">Temperature</string>
     <string name="volume">Volume</string>
+    <string name="connected_devices">Connected Devices</string>
+    <string name="save">Save</string>
+    <string name="settings">Device Settings</string>
+    <string name="tv_settings">TV Settings</string>
+    <string name="speaker_settings">Speaker Settings</string>
+    <string name="ac_settings">AC Settings</string>
+    <string name="select">Select Channel</string>
 </resources>

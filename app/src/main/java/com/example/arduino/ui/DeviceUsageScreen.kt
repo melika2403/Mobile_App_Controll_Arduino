@@ -1,32 +1,32 @@
 package com.example.arduino.ui
 
 import android.os.Build
+import android.view.ViewGroup
+import android.graphics.Color as AndroidColor
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
-import com.patrykandpatrick.vico.compose.chart.Chart
-import com.patrykandpatrick.vico.compose.chart.column.columnChart
-import com.patrykandpatrick.vico.compose.style.ProvideChartStyle
-import com.patrykandpatrick.vico.core.axis.AxisPosition
-import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
-import com.patrykandpatrick.vico.core.entry.entryModelOf
+import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
 import java.time.DayOfWeek
-import java.time.LocalDateTime
 import java.time.Duration
+import java.time.LocalDateTime
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -46,22 +46,46 @@ fun DeviceUsageScreen(viewModel: DeviceUsageViewModel = viewModel()) {
         Spacer(modifier = Modifier.height(16.dp))
 
         if (selectedDevice.value == null) {
-            deviceNames.value.forEach { name ->
-                Button(
-                    onClick = { viewModel.selectDevice(name) },
+            deviceNames.value.forEachIndexed { index, name ->
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp)
+                        .clickable { viewModel.selectDevice(name) }
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(name)
+                    Icon(
+                        imageVector = viewModel.getDeviceIcon(name),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .background(Color.White)
+                            .padding(4.dp),
+                        tint = Color(0xFF2196F3)
+                    )
+                    Text(
+                        text = name,
+                        modifier = Modifier.padding(4.dp)
+                    )
+                }
+
+                if (index < deviceNames.value.lastIndex) {
+                    Divider(
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
                 }
             }
         } else {
-            Button(
+            TextButton(
                 onClick = { viewModel.selectDevice(null) },
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = Color(0xFF2196F3)
+                )
             ) {
-                Text("Back to Device List")
+                Text("← Back to Device List", style = MaterialTheme.typography.bodyLarge)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -69,45 +93,71 @@ fun DeviceUsageScreen(viewModel: DeviceUsageViewModel = viewModel()) {
             Spacer(modifier = Modifier.height(8.dp))
 
             val weeklyUsage: Map<DayOfWeek, Float> = logs.value
-                .groupBy { log ->
-                    log.startTime.toLocalDate().dayOfWeek
-                }
+                .groupBy { it.startTime.toLocalDate().dayOfWeek }
                 .mapValues { (_, logsForDay) ->
-                    logsForDay.sumOf { log ->
-                        val endTime = log.endTime ?: LocalDateTime.now()
-                        Duration.between(log.startTime, endTime).toMinutes().toDouble()
+                    logsForDay.sumOf {
+                        val endTime = it.endTime ?: LocalDateTime.now()
+                        Duration.between(it.startTime, endTime).toMinutes().toDouble()
                     }.toFloat()
                 }
 
             val days = DayOfWeek.values()
-
             val usageByDay = days.mapIndexed { index, day ->
                 val minutes = weeklyUsage[day] ?: 0f
                 index.toFloat() to minutes
             }
 
-            val chartModel = entryModelOf(*usageByDay.toTypedArray())
-
             val dayLabels = days.mapIndexed { index, day ->
                 index.toFloat() to day.getDisplayName(TextStyle.SHORT, Locale.getDefault())
             }.toMap()
 
-            val bottomAxis = rememberBottomAxis(
-                valueFormatter = AxisValueFormatter<AxisPosition.Horizontal.Bottom> { value, _ ->
-                    dayLabels[value] ?: ""
-                }
-            )
+            val barEntries = usageByDay.map { BarEntry(it.first, it.second) }
 
-            ProvideChartStyle {
-                Chart(
-                    chart = columnChart(),
-                    model = chartModel,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp),
-                    bottomAxis = bottomAxis
-                )
-            }
+            AndroidView(
+                factory = { context ->
+                    BarChart(context).apply {
+                        layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 600)
+
+                        val dataSet = BarDataSet(barEntries, "Minutes Used").apply {
+                            color = AndroidColor.rgb(33, 150, 243) // Material Blue
+                            valueTextColor = AndroidColor.rgb(33, 150, 243)
+                            valueTextSize = 12f
+                        }
+
+                        data = BarData(dataSet)
+                        description.isEnabled = false
+                        setFitBars(true)
+                        animateY(1000)
+
+                        axisLeft.axisMinimum = 0f
+                        axisLeft.textColor = AndroidColor.rgb(33, 150, 243)
+                        axisRight.isEnabled = false
+                        xAxis.setDrawGridLines(false)
+                        axisLeft.setDrawGridLines(false)
+                        axisRight.setDrawGridLines(false)
+                        xAxis.setDrawAxisLine(false)
+                        axisLeft.setDrawAxisLine(false)
+                        axisRight.setDrawAxisLine(false)
+                        axisRight.isEnabled = false
+
+                        xAxis.apply {
+                            position = XAxis.XAxisPosition.BOTTOM
+                            setDrawGridLines(false)
+                            granularity = 1f
+                            valueFormatter = com.github.mikephil.charting.formatter.IndexAxisValueFormatter(
+                                dayLabels.map { it.value }
+                            )
+                            textColor = AndroidColor.DKGRAY
+                            textSize = 12f
+                        }
+
+                        legend.isEnabled = false
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+            )
         }
     }
 }

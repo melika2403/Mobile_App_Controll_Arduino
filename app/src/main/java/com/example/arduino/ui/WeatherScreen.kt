@@ -60,7 +60,6 @@ fun WeatherCard(
         colors = CardDefaults.cardColors(containerColor = Color(0xFF1C1C1E)),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
     ) {
         Column(
             modifier = Modifier.padding(24.dp),
@@ -73,7 +72,6 @@ fun WeatherCard(
                 Column {
                     Text(date, color = Color.Gray, fontSize = 14.sp)
                     Text(getWeatherDescription(weatherCode), color = Color.White, fontSize = 22.sp)
-                    Text("Limited Sunshine", color = Color.LightGray, fontSize = 14.sp)
                 }
                 Text(
                     text = "${temperature.toInt()}°C",
