@@ -1,5 +1,12 @@
 package com.example.arduino.ui
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AcUnit
+import androidx.compose.material.icons.filled.DeviceUnknown
+import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.Speaker
+import androidx.compose.material.icons.filled.Tv
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.arduino.data.DeviceUsageLog
@@ -37,6 +44,16 @@ class DeviceUsageViewModel(private val dao: DeviceUsageLogDao) : ViewModel() {
     private fun loadLogsForDevice(name: String) {
         viewModelScope.launch {
             _logs.value = dao.getLogsForDevice(name)
+        }
+    }
+
+    fun getDeviceIcon(deviceName: String): ImageVector {
+        return when (deviceName) {
+            "Lamp" -> Icons.Filled.Lightbulb
+            "Smart TV" -> Icons.Filled.Tv
+            "Air Conditioner" -> Icons.Filled.AcUnit
+            "Speaker" -> Icons.Filled.Speaker
+            else -> Icons.Filled.DeviceUnknown
         }
     }
 }

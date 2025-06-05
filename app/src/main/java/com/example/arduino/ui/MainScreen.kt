@@ -3,7 +3,6 @@ package com.example.arduino.ui
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,28 +19,23 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -95,7 +89,7 @@ fun LivingRoom(viewModel: MainViewModel = viewModel()){
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Connected Devices "
+                text = stringResource(R.string.connected_devices)
             )
             NumberBadge(4)
         }
@@ -111,7 +105,7 @@ fun LivingRoom(viewModel: MainViewModel = viewModel()){
             Devices(stringResource(R.string.tv), stringResource(R.string.channel), settings.channel, viewModel, Modifier.weight(1f))
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Row (
             modifier = Modifier
@@ -136,7 +130,10 @@ fun ToggleSwitchWithLabel(
     ) {
         Switch(
             checked = checked,
-            onCheckedChange = onCheckedChange
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedTrackColor = Color(0xFF2196F3),
+            )
         )
 
         Text(
@@ -173,14 +170,15 @@ fun Devices(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
-                Image(
-                    painter = painterResource(R.drawable.lampicon),
+                Icon(
+                    imageVector = viewModel.getDeviceIcon(deviceName),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(24.dp)
+                        .size(32.dp)
                         .clip(CircleShape)
                         .background(Color.White)
-                        .padding(8.dp)
+                        .padding(4.dp),
+                    tint = Color(0xFF2196F3)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
@@ -205,13 +203,7 @@ fun Devices(
             ToggleSwitchWithLabel(
                 checked = deviceState,
                 onCheckedChange = { isChecked ->
-                    viewModel.setDeviceSwitchState(deviceName, isChecked)
-                    when (deviceName) {
-                        "Lamp" -> if (isChecked) viewModel.turnOnLed() else viewModel.turnOffLed()
-                        "Smart TV" -> if (isChecked) viewModel.turnOnTV() else viewModel.turnOffTV()
-                        "Air Conditioner" -> if (isChecked) viewModel.turnOnAC() else viewModel.turnOffAC()
-                        "Speaker" -> if (isChecked) viewModel.turnOnSpeaker() else viewModel.turnOffSpeaker()
-                    }
+                    viewModel.onDeviceSwitchToggled(deviceName, isChecked)
                 }
             )   
         }

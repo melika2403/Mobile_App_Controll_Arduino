@@ -4,9 +4,17 @@ import android.app.Application
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AcUnit
+import androidx.compose.material.icons.filled.DeviceUnknown
+import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.Speaker
+import androidx.compose.material.icons.filled.Tv
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -78,6 +86,27 @@ class MainViewModel(application: Application) :  AndroidViewModel(application) {
             "Smart TV" -> _tvSwitchState.value = isOn
             "Air Conditioner" -> _acSwitchState.value = isOn
             "Speaker" -> _speakerSwitchState.value = isOn
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun onDeviceSwitchToggled(deviceName: String, isChecked: Boolean) {
+        setDeviceSwitchState(deviceName, isChecked)
+        when (deviceName) {
+            "Lamp" -> if (isChecked) turnOnLed() else turnOffLed()
+            "Smart TV" -> if (isChecked) turnOnTV() else turnOffTV()
+            "Air Conditioner" -> if (isChecked) turnOnAC() else turnOffAC()
+            "Speaker" -> if (isChecked) turnOnSpeaker() else turnOffSpeaker()
+        }
+    }
+
+    fun getDeviceIcon(deviceName: String): ImageVector {
+        return when (deviceName) {
+            "Lamp" -> Icons.Filled.Lightbulb
+            "Smart TV" -> Icons.Filled.Tv
+            "Air Conditioner" -> Icons.Filled.AcUnit
+            "Speaker" -> Icons.Filled.Speaker
+            else -> Icons.Filled.DeviceUnknown
         }
     }
 
