@@ -4,6 +4,9 @@ import android.app.Application
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,10 +15,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import com.example.arduino.data.AppDatabase
 import com.example.arduino.data.ArduinoRepository
+import com.example.arduino.data.DeviceSettings
 import com.example.arduino.data.DeviceUsageLog
 import com.example.arduino.data.DeviceUsageLogDao
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import kotlin.time.Duration
@@ -31,6 +36,29 @@ class MainViewModel(application: Application) :  AndroidViewModel(application) {
     ).build()
 
     private val deviceUsageLogDao = db.deviceUsageLogDao()
+
+    private val _settings = MutableStateFlow(
+        DeviceSettings(
+            channel = "CH1",
+            buzzerVolume = 50f,
+            autoACEnabled = true,
+            temperatureThreshold = 30f
+        )
+    )
+    val settings = _settings.asStateFlow()
+
+    fun updateSettings(newSettings: DeviceSettings) {
+        _settings.value = newSettings
+    }
+
+    val channels = listOf("CH1", "CH2", "CH3")
+
+    fun sendAllSettingsToArduino() {
+        val currentSettings = _settings.value
+        repo.sendTVChannel(currentSettings.channel)
+        repo.sendBuzzerVolume(currentSettings.buzzerVolume.toInt())
+        repo.sendAutoAC(currentSettings.autoACEnabled, currentSettings.temperatureThreshold)
+    }
 
     fun connectToArduino(): Boolean {
         val success = repo.connect()

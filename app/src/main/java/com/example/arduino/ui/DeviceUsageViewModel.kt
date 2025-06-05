@@ -29,9 +29,9 @@ class DeviceUsageViewModel(private val dao: DeviceUsageLogDao) : ViewModel() {
         }
     }
 
-    fun selectDevice(name: String) {
+    fun selectDevice(name: String?) {
         _selectedDevice.value = name
-        loadLogsForDevice(name)
+        if (name != null) loadLogsForDevice(name)
     }
 
     private fun loadLogsForDevice(name: String) {

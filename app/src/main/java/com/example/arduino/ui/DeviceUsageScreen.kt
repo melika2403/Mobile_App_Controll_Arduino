@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,10 +23,6 @@ import com.patrykandpatrick.vico.compose.chart.column.columnChart
 import com.patrykandpatrick.vico.compose.style.ProvideChartStyle
 import com.patrykandpatrick.vico.core.axis.AxisPosition
 import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
-import com.patrykandpatrick.vico.core.entry.ChartEntryModel
-import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
-import com.patrykandpatrick.vico.core.entry.entryOf
-import com.patrykandpatrick.vico.core.entry.entriesOf
 import com.patrykandpatrick.vico.core.entry.entryModelOf
 import java.time.DayOfWeek
 import java.time.LocalDateTime
@@ -64,7 +58,7 @@ fun DeviceUsageScreen(viewModel: DeviceUsageViewModel = viewModel()) {
             }
         } else {
             Button(
-                onClick = { viewModel.selectDevice("") },
+                onClick = { viewModel.selectDevice(null) },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
             ) {
                 Text("Back to Device List")

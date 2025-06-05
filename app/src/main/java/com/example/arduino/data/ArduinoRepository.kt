@@ -30,5 +30,17 @@ class ArduinoRepository(context: Context) {
     fun sendSpeakerOn() = serialManager.sendCommand("SPEAKER_ON")
     fun sendSpeakerOff() = serialManager.sendCommand("SPEAKER_OFF")
 
+    fun sendTVChannel(channel: String) {
+        serialManager.sendCommand("TV_CHANNEL:$channel")
+    }
+
+    fun sendBuzzerVolume(volume: Int) {
+        serialManager.sendCommand("BUZZER_VOLUME:$volume")
+    }
+
+    fun sendAutoAC(enabled: Boolean, threshold: Float) {
+        serialManager.sendCommand("AUTO_AC:${if (enabled) "ON" else "OFF"}:$threshold")
+    }
+
     fun disconnect() = serialManager.close()
 }

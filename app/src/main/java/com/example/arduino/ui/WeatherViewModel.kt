@@ -6,10 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.arduino.network.WeatherApi
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
 import androidx.room.Room
 import com.example.arduino.data.AppDatabase
-import com.example.arduino.data.WeatherDao
 import com.example.arduino.data.WeatherEntity
 
 class WeatherViewModel (application: Application): ViewModel() {
@@ -74,7 +72,7 @@ class WeatherViewModel (application: Application): ViewModel() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                uiState = WeatherUiState.Error
+                loadFromCache()
             }
         }
     }

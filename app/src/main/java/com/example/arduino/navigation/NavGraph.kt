@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -16,13 +17,16 @@ import com.example.arduino.ui.DeviceUsageViewModel
 import com.example.arduino.ui.DeviceUsageViewModelFactory
 import com.example.arduino.ui.MainScreen
 import com.example.arduino.ui.MainViewModel
+import com.example.arduino.ui.SettingsScreen
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavigationGraph(navController: NavHostController, viewModel: MainViewModel, innerPadding: PaddingValues) {
     NavHost(navController, startDestination = NavigationItem.Pocetak.route) {
         composable(NavigationItem.Pocetak.route) {
-            MainScreen(viewModel = androidx.lifecycle.viewmodel.compose.viewModel())
+            MainScreen(viewModel = viewModel)
         }
         composable(NavigationItem.Upotreba.route) {
             val context = LocalContext.current
@@ -34,6 +38,21 @@ fun NavigationGraph(navController: NavHostController, viewModel: MainViewModel, 
             )
 
             DeviceUsageScreen(viewModel = viewModel)
+        }
+        composable(NavigationItem.Postavke.route) {
+            val currentSettings by viewModel.settings.collectAsState()
+            val channels = viewModel.channels
+
+            SettingsScreen(
+                channels = channels,
+                currentSettings = currentSettings,
+                onSettingsChange = { updated ->
+                    viewModel.updateSettings(updated)
+                },
+                onSubmit = {
+                    // Ako trebaš još nešto kad korisnik klikne "Save"
+                }
+            )
         }
 
     }
