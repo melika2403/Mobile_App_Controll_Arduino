@@ -1,5 +1,8 @@
 package com.example.arduino.ui
 
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AcUnit
 import androidx.compose.material.icons.filled.DeviceUnknown
@@ -13,7 +16,12 @@ import com.example.arduino.data.DeviceUsageLog
 import com.example.arduino.data.DeviceUsageLogDao
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.DayOfWeek
+import java.time.LocalDateTime
 
 class DeviceUsageViewModel(private val dao: DeviceUsageLogDao) : ViewModel() {
 
@@ -25,6 +33,15 @@ class DeviceUsageViewModel(private val dao: DeviceUsageLogDao) : ViewModel() {
 
     private val _logs = MutableStateFlow<List<DeviceUsageLog>>(emptyList())
     val logs: StateFlow<List<DeviceUsageLog>> = _logs
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    val logsThisWeek = logs.map { allLogs ->
+        val now = LocalDateTime.now()
+        val startOfWeek = now.with(DayOfWeek.MONDAY).toLocalDate().atStartOfDay()
+        allLogs.filter {
+            it.startTime.isAfter(startOfWeek) || it.startTime.isEqual(startOfWeek)
+        }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     init {
         loadDeviceNames()
@@ -43,7 +60,9 @@ class DeviceUsageViewModel(private val dao: DeviceUsageLogDao) : ViewModel() {
 
     private fun loadLogsForDevice(name: String) {
         viewModelScope.launch {
-            _logs.value = dao.getLogsForDevice(name)
+            val logs = dao.getLogsForDevice(name)
+            logs.forEach { Log.d("DeviceLog", "LOG: $it") }
+            _logs.value = logs
         }
     }
 

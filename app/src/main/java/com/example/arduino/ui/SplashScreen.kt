@@ -15,6 +15,7 @@ import com.example.arduino.R
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -35,7 +36,7 @@ fun SplashScreen() {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "My Smart Home",
+                text = stringResource(R.string.app_name),
                 color = MaterialTheme.colorScheme.onBackground
             )
         }

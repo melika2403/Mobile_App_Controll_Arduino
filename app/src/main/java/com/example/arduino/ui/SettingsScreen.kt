@@ -265,6 +265,7 @@ fun SettingsScreen(
                         temperatureThreshold = temperatureThreshold
                     )
                     onSettingsChange(newSettings)
+                    mainViewModel.updateSettings(newSettings)
                     mainViewModel.sendAllSettingsToArduino()
                 },
                 modifier = Modifier.fillMaxWidth(),

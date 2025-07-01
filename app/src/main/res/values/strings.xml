@@ -17,4 +17,18 @@
     <string name="speaker_settings">Speaker Settings</string>
     <string name="ac_settings">AC Settings</string>
     <string name="select">Select Channel</string>
+    <string name="opis">"
+                Dobrodošli u budućnost!
+
+                Ova aplikacija omogućava daljinsko upravljanje vašim pametnim uređajima – uključujući svetla, TV, klima uređaj i zvučnike – sa bilo kog mesta.
+
+                Automatska kontrola na osnovu temperature, pregled istorije korišćenja i više.
+
+                Verzija aplikacije: 1.0.0
+            "</string>
+
+    <string name="device_usage">Device Usage</string>
+    <string name="back_to_device_list">← Back to Device List</string>
+    <string name="usage_for">Usage for: %1$s</string>
+    <string name="minutes_used">Minutes Used</string>
 </resources>
