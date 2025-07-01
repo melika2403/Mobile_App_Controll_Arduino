@@ -47,17 +47,41 @@ class MainViewModel(application: Application) :  AndroidViewModel(application) {
 
     fun updateSettings(newSettings: DeviceSettings) {
         _settings.value = newSettings
-        sendAllSettingsToArduino()
+
+        viewModelScope.launch {
+            try {
+                sendAllSettingsToArduino()
+            } catch (e: Exception) {
+                Log.e("MainViewModel", "Greška prilikom slanja ka Arduinu: ${e.message}", e)
+            }
+        }
     }
+
 
     val channels = listOf("CH1", "CH2", "CH3")
 
     fun sendAllSettingsToArduino() {
         val currentSettings = _settings.value
-        repo.sendTVChannel(currentSettings.channel)
-        repo.sendBuzzerVolume(currentSettings.buzzerVolume.toInt())
-        repo.sendAutoAC(currentSettings.autoACEnabled, currentSettings.temperatureThreshold)
+
+        try {
+            repo.sendTVChannel(currentSettings.channel)
+        } catch (e: Exception) {
+            Log.e("sendSettings", "Greška pri slanju kanala: ${e.message}", e)
+        }
+
+        try {
+            repo.sendBuzzerVolume(currentSettings.buzzerVolume.toInt())
+        } catch (e: Exception) {
+            Log.e("sendSettings", "Greška pri slanju volumena: ${e.message}", e)
+        }
+
+        try {
+            repo.sendAutoAC(currentSettings.autoACEnabled, currentSettings.temperatureThreshold)
+        } catch (e: Exception) {
+            Log.e("sendSettings", "Greška pri slanju AC postavki: ${e.message}", e)
+        }
     }
+
 
     private val _lampSwitchState = MutableStateFlow(false)
     val lampSwitchState: StateFlow<Boolean> = _lampSwitchState

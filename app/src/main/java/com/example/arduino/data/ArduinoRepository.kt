@@ -40,7 +40,9 @@ class ArduinoRepository(context: Context) {
     }
 
     fun sendAutoAC(enabled: Boolean, threshold: Float) {
-        serialManager.sendCommand("AUTO_AC:${if (enabled) "ON" else "OFF"}:$threshold")
+        val enabledInt = if (enabled) 1 else 0
+        val thresholdInt = threshold.toInt()
+        serialManager.sendCommand("SET_AC_AUTO:$enabledInt:$thresholdInt")
     }
 
     fun disconnect() = serialManager.close()

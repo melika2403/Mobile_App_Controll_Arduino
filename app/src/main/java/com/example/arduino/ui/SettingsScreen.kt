@@ -44,11 +44,18 @@ fun SettingsScreen(
     var selectedChannel by remember { mutableStateOf(currentSettings.channel) }
     var buzzerVolume by remember { mutableFloatStateOf(currentSettings.buzzerVolume) }
     var autoACEnabled by remember { mutableStateOf(currentSettings.autoACEnabled) }
-    var temperatureThreshold by remember { mutableFloatStateOf(currentSettings.temperatureThreshold) }
+    var temperatureThreshold by remember {
+        mutableFloatStateOf(currentSettings.temperatureThreshold.coerceIn(20f, 40f))
+    }
 
     LazyColumn(
         modifier = Modifier
-            .padding(20.dp)
+            .padding(
+                top = 64.dp,
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 100.dp
+            )
             .fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
@@ -244,7 +251,7 @@ fun SettingsScreen(
 
                     ThermostatDial(
                         value = temperatureThreshold,
-                        onValueChange = { temperatureThreshold = it },
+                        onValueChange = { temperatureThreshold = it.coerceIn(20f, 40f) },
                         min = 20f,
                         max = 40f
                     )
@@ -266,7 +273,6 @@ fun SettingsScreen(
                     )
                     onSettingsChange(newSettings)
                     mainViewModel.updateSettings(newSettings)
-                    mainViewModel.sendAllSettingsToArduino()
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(

@@ -48,9 +48,14 @@ fun MainScreen(viewModel: MainViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(
+                top = 64.dp,
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 70.dp
+            )
             .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.Center,
+        //verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LivingRoom(viewModel)

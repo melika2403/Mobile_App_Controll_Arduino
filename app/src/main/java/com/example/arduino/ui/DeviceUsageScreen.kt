@@ -7,7 +7,10 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,7 +46,14 @@ fun DeviceUsageScreen(viewModel: DeviceUsageViewModel = viewModel()) {
         viewModel.loadDeviceNames()
     }
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier
+        .verticalScroll(rememberScrollState())
+        .padding(
+        top = 64.dp,
+        start = 16.dp,
+        end = 16.dp,
+        bottom = 100.dp
+    )) {
         Text(stringResource(R.string.device_usage), style = MaterialTheme.typography.headlineSmall)
         Spacer(modifier = Modifier.height(16.dp))
 
