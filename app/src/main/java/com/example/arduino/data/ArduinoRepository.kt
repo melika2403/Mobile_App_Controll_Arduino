@@ -31,6 +31,7 @@ class ArduinoRepository(context: Context) {
     fun sendSpeakerOff() = serialManager.sendCommand("SPEAKER_OFF")
 
     fun sendTVChannel(channel: String) {
+        Log.d("ArduinoRepository", "sendCommand: TV_CHANNEL:$channel")
         serialManager.sendCommand("TV_CHANNEL:$channel")
     }
 

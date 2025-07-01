@@ -10,29 +10,19 @@ import androidx.compose.material.icons.filled.DeviceUnknown
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Speaker
 import androidx.compose.material.icons.filled.Tv
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import com.example.arduino.data.AppDatabase
 import com.example.arduino.data.ArduinoRepository
 import com.example.arduino.data.DeviceSettings
 import com.example.arduino.data.DeviceUsageLog
-import com.example.arduino.data.DeviceUsageLogDao
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
-import kotlin.time.Duration
-
 
 class MainViewModel(application: Application) :  AndroidViewModel(application) {
     private val repo = ArduinoRepository(application)
@@ -57,6 +47,7 @@ class MainViewModel(application: Application) :  AndroidViewModel(application) {
 
     fun updateSettings(newSettings: DeviceSettings) {
         _settings.value = newSettings
+        sendAllSettingsToArduino()
     }
 
     val channels = listOf("CH1", "CH2", "CH3")

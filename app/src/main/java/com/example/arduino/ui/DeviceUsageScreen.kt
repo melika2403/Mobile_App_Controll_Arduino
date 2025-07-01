@@ -16,9 +16,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.arduino.R
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
@@ -35,14 +37,14 @@ import java.util.Locale
 fun DeviceUsageScreen(viewModel: DeviceUsageViewModel = viewModel()) {
     val deviceNames = viewModel.deviceNames.collectAsState()
     val selectedDevice = viewModel.selectedDevice.collectAsState()
-    val logs = viewModel.logs.collectAsState()
+    val logsThisWeek = viewModel.logsThisWeek.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadDeviceNames()
     }
 
     Column(modifier = Modifier.padding(16.dp)) {
-        Text("Device Usage", style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(R.string.device_usage), style = MaterialTheme.typography.headlineSmall)
         Spacer(modifier = Modifier.height(16.dp))
 
         if (selectedDevice.value == null) {
@@ -85,14 +87,14 @@ fun DeviceUsageScreen(viewModel: DeviceUsageViewModel = viewModel()) {
                     contentColor = Color(0xFF2196F3)
                 )
             ) {
-                Text("← Back to Device List", style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(R.string.back_to_device_list), style = MaterialTheme.typography.bodyLarge)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
             Text("Usage for: ${selectedDevice.value}", style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
 
-            val weeklyUsage: Map<DayOfWeek, Float> = logs.value
+            val weeklyUsage: Map<DayOfWeek, Float> = logsThisWeek.value
                 .groupBy { it.startTime.toLocalDate().dayOfWeek }
                 .mapValues { (_, logsForDay) ->
                     logsForDay.sumOf {
@@ -119,7 +121,7 @@ fun DeviceUsageScreen(viewModel: DeviceUsageViewModel = viewModel()) {
                         layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 600)
 
                         val dataSet = BarDataSet(barEntries, "Minutes Used").apply {
-                            color = AndroidColor.rgb(33, 150, 243) // Material Blue
+                            color = AndroidColor.rgb(33, 150, 243)
                             valueTextColor = AndroidColor.rgb(33, 150, 243)
                             valueTextSize = 12f
                         }
